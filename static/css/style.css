@@ -1,0 +1,26 @@
+/* ============================================================
+   style.css - Notre CSS personnalise.
+   ------------------------------------------------------------
+   On reste minimaliste : Bootstrap fait deja 95% du boulot.
+   Ici on ajoute juste 2 petites touches de finition.
+   ============================================================ */
+
+/* Fond de page : un gris tres clair, plus reposant pour l'oeil
+   que le blanc pur, sans casser la lisibilite. */
+body {
+    background-color: #f5f7fa;
+}
+
+/* Petit effet "lift" au survol des cartes :
+   - la carte se souleve de 3 pixels (translateY)
+   - son ombre s'agrandit
+   Resultat : retour visuel agreable quand l'utilisateur passe la souris dessus.
+   La "transition" rend l'animation fluide (0.15s) au lieu d'etre brutale. */
+.card {
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1) !important;
+}

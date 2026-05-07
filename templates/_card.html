@@ -1,0 +1,71 @@
+{# ============================================================
+   _card.html - Une "carte" qui represente UNE demande.
+   ------------------------------------------------------------
+   Le tiret bas ("_") devant le nom est juste une convention
+   pour indiquer "ce fichier est un morceau a reutiliser, pas
+   une vraie page". On l'inclut dans index.html via {% include %}.
+
+   Pourquoi un fichier a part ? Pour ecrire ce code une seule
+   fois et le reutiliser partout (page d'accueil, recherche...).
+
+   La variable "feature" arrive automatiquement depuis la boucle
+   qui inclut ce fichier dans index.html.
+   ============================================================ #}
+
+<div class="card h-100 shadow-sm">
+    <div class="card-body d-flex flex-column">
+
+        {# === Bandeau du haut : 2 badges colores (Nature + Priorite) === #}
+        <div class="mb-2">
+
+            {# Badge "Nature" : la couleur depend du type de demande.
+               Bug -> rouge (alerte), Feature -> bleu (positif), Amelioration -> bleu clair. #}
+            {% if feature.nature == 'Bug' %}
+                <span class="badge bg-danger">{{ feature.nature }}</span>
+            {% elif feature.nature == 'Feature' %}
+                <span class="badge bg-primary">{{ feature.nature }}</span>
+            {% else %}
+                <span class="badge bg-info text-dark">{{ feature.nature }}</span>
+            {% endif %}
+
+            {# Badge "Priorite" : Haute -> rouge, Moyenne -> jaune, Basse -> gris. #}
+            {% if feature.priority == 'Haute' %}
+                <span class="badge bg-danger">Priorité : {{ feature.priority }}</span>
+            {% elif feature.priority == 'Moyenne' %}
+                <span class="badge bg-warning text-dark">Priorité : {{ feature.priority }}</span>
+            {% else %}
+                <span class="badge bg-secondary">Priorité : {{ feature.priority }}</span>
+            {% endif %}
+        </div>
+
+        {# Titre de la demande #}
+        <h5 class="card-title">{{ feature.title }}</h5>
+
+        {# Description : si elle est vide, on affiche un message en italique grise
+           pour ne pas laisser un trou dans la carte. #}
+        {% if feature.description %}
+            <p class="card-text">{{ feature.description }}</p>
+        {% else %}
+            <p class="card-text text-muted fst-italic">Pas de description fournie.</p>
+        {% endif %}
+
+        {# === Bas de la carte : statut + bouton "Details" ===
+           "mt-auto" pousse cette ligne tout en bas de la carte (pour aligner toutes les cartes entre elles). #}
+        <div class="mt-auto d-flex justify-content-between align-items-center">
+
+            {# Badge "Statut" : En attente -> bleu clair, Valide -> vert, Rejete -> rouge. #}
+            {% if feature.status == 'En attente' %}
+                <span class="badge bg-info text-dark">{{ feature.status }}</span>
+            {% elif feature.status == 'Validé' %}
+                <span class="badge bg-success">{{ feature.status }}</span>
+            {% else %}
+                <span class="badge bg-danger">{{ feature.status }}</span>
+            {% endif %}
+
+            {# Bouton qui mene a la page de detail. url_for() construit l'URL a partir
+               du nom de la fonction Python ("view_feature") -> jamais d'URL ecrite en dur ! #}
+            <a href="{{ url_for('view_feature', feature_id=feature.id) }}"
+               class="btn btn-sm btn-outline-primary">Détails</a>
+        </div>
+    </div>
+</div>

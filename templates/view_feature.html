@@ -1,0 +1,66 @@
+{# ============================================================
+   view_feature.html - Page de detail d'UNE demande precise.
+   ------------------------------------------------------------
+   On arrive ici via une URL comme /feature/3 (ou 3 est l'id).
+   La fonction Python view_feature() trouve la demande et nous
+   l'envoie sous le nom "feature".
+   ============================================================ #}
+
+{% extends "base.html" %}
+
+{# Le titre de l'onglet reprend le titre de la demande, c'est plus pratique. #}
+{% block title %}{{ feature.title }} — FeatureHub{% endblock %}
+
+{% block content %}
+
+    {# Petit lien "retour" pour revenir au tableau de bord sans passer par la navbar. #}
+    <a href="{{ url_for('index') }}" class="btn btn-link mb-3">&larr; Retour au tableau de bord</a>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+
+            <h1 class="card-title h3">{{ feature.title }}</h1>
+
+            {# Bandeau de badges (memes regles de couleur que sur la carte de l'accueil).
+               On repete les conditions ici car cette page n'inclut PAS _card.html
+               (le partial est concu pour la grille, pas pour la page detail). #}
+            <div class="mb-3">
+                {% if feature.nature == 'Bug' %}
+                    <span class="badge bg-danger">{{ feature.nature }}</span>
+                {% elif feature.nature == 'Feature' %}
+                    <span class="badge bg-primary">{{ feature.nature }}</span>
+                {% else %}
+                    <span class="badge bg-info text-dark">{{ feature.nature }}</span>
+                {% endif %}
+
+                {% if feature.priority == 'Haute' %}
+                    <span class="badge bg-danger">Priorité : {{ feature.priority }}</span>
+                {% elif feature.priority == 'Moyenne' %}
+                    <span class="badge bg-warning text-dark">Priorité : {{ feature.priority }}</span>
+                {% else %}
+                    <span class="badge bg-secondary">Priorité : {{ feature.priority }}</span>
+                {% endif %}
+
+                {% if feature.status == 'En attente' %}
+                    <span class="badge bg-info text-dark">{{ feature.status }}</span>
+                {% elif feature.status == 'Validé' %}
+                    <span class="badge bg-success">{{ feature.status }}</span>
+                {% else %}
+                    <span class="badge bg-danger">{{ feature.status }}</span>
+                {% endif %}
+            </div>
+
+            <h2 class="h5 mt-4">Description</h2>
+            {% if feature.description %}
+                <p>{{ feature.description }}</p>
+            {% else %}
+                <p class="text-muted fst-italic">Pas de description fournie.</p>
+            {% endif %}
+
+            <hr>
+
+            <p class="text-muted mb-0"><small>Identifiant interne : #{{ feature.id }}</small></p>
+        </div>
+    </div>
+
+{% endblock %}

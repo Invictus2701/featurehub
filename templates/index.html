@@ -1,0 +1,50 @@
+{# ============================================================
+   index.html - La page d'accueil (le tableau de bord).
+   ------------------------------------------------------------
+   Cette page "herite" de base.html : on recupere automatiquement
+   la barre de navigation et le pied de page, et on remplit
+   uniquement la zone centrale (le bloc "content").
+   ============================================================ #}
+
+{% extends "base.html" %}
+
+{# On remplace le titre de l'onglet par quelque chose de plus parlant. #}
+{% block title %}Accueil — FeatureHub{% endblock %}
+
+{% block content %}
+
+    <h1 class="mb-4">Tableau de bord</h1>
+
+    {# === Resume chiffre tout en haut ===
+       Les variables "total" et "en_attente" sont calculees dans app.py
+       et envoyees a cette page via render_template(). #}
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="alert alert-primary mb-2">
+                <strong>{{ total }}</strong> demande{% if total > 1 %}s{% endif %} au total.
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="alert alert-info mb-2">
+                <strong>{{ en_attente }}</strong> en attente de traitement.
+            </div>
+        </div>
+    </div>
+
+    {# === Grille de cartes ===
+       "row g-3" : ligne avec un petit espace entre les colonnes.
+       "col-md-6 col-lg-4" : sur grand ecran -> 3 cartes par ligne (12/4=3),
+                             sur ecran moyen -> 2 cartes par ligne, sur mobile -> 1 carte. #}
+    <div class="row g-3">
+        {# On boucle sur la liste "features" envoyee par app.py.
+           A chaque tour, la variable "feature" represente UNE demande. #}
+        {% for feature in features %}
+            <div class="col-md-6 col-lg-4">
+                {# On insere ici le contenu de _card.html.
+                   La variable "feature" du for est automatiquement accessible dedans. #}
+                {% include '_card.html' %}
+            </div>
+        {% endfor %}
+    </div>
+
+{% endblock %}

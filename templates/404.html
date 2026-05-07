@@ -1,0 +1,21 @@
+{# ============================================================
+   404.html - Page affichee quand l'utilisateur tape une URL
+   qui n'existe pas (ex: /feature/9999).
+   ------------------------------------------------------------
+   Flask l'utilise automatiquement grace au gestionnaire
+   @app.errorhandler(404) defini dans app.py.
+   ============================================================ #}
+
+{% extends "base.html" %}
+
+{% block title %}Page introuvable — FeatureHub{% endblock %}
+
+{% block content %}
+
+    <div class="text-center py-5">
+        <h1 class="display-1 text-muted">404</h1>
+        <p class="lead">Cette page n'existe pas (ou plus).</p>
+        <a href="{{ url_for('index') }}" class="btn btn-primary">Retour à l'accueil</a>
+    </div>
+
+{% endblock %}

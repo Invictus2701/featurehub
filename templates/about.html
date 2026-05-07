@@ -1,0 +1,36 @@
+{# ============================================================
+   about.html - Page "A propos" du projet.
+   Comme les autres pages, elle herite de base.html.
+   ============================================================ #}
+
+{% extends "base.html" %}
+
+{% block title %}À propos — FeatureHub{% endblock %}
+
+{% block content %}
+
+    <h1 class="mb-4">À propos de FeatureHub</h1>
+
+    <p class="lead">
+        FeatureHub est une application web qui permet aux équipes de collecter,
+        gérer et prioriser les demandes de fonctionnalités, les bugs et les
+        tâches de maintenance.
+    </p>
+
+    <h2 class="h4 mt-4">Mission</h2>
+    <p>
+        Centraliser les demandes pour ne plus rien perdre, et faciliter la
+        priorisation grâce à des indicateurs visuels clairs (statut, nature, priorité).
+    </p>
+
+    <h2 class="h4 mt-4">Technologies utilisées</h2>
+    <ul>
+        <li><strong>Flask</strong> — un micro-framework Python qui gère le côté serveur.</li>
+        <li><strong>Jinja2</strong> — un moteur de templates qui transforme nos modèles HTML en vraies pages.</li>
+        <li><strong>Bootstrap 5</strong> — un framework CSS qui donne tout de suite un look propre et responsive.</li>
+    </ul>
+
+    <h2 class="h4 mt-4">Contexte</h2>
+    <p>Projet réalisé dans le cadre du cours d'Architecture Web à l'ECAM.</p>
+
+{% endblock %}
