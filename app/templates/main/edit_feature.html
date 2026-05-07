@@ -1,0 +1,33 @@
+{# Page de MODIFICATION d'une demande #}
+{% extends "base.html" %}
+
+{% block title %}Modifier — {{ feature.title }}{% endblock %}
+
+{% block content %}
+
+<nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{{ url_for('main.index') }}">Accueil</a></li>
+        <li class="breadcrumb-item">
+            <a href="{{ url_for('main.view_feature', feature_id=feature.id) }}">{{ feature.title }}</a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">Modifier</li>
+    </ol>
+</nav>
+
+<h1 class="mb-4">
+    <i class="bi bi-pencil"></i> Modifier la demande
+</h1>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        {% with with_file=False,
+                submit_url=url_for('main.edit_feature', feature_id=feature.id),
+                submit_label='Enregistrer les modifications',
+                cancel_url=url_for('main.view_feature', feature_id=feature.id) %}
+            {% include 'main/_form.html' %}
+        {% endwith %}
+    </div>
+</div>
+
+{% endblock %}

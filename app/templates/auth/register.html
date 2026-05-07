@@ -1,0 +1,50 @@
+{# Note TP3 (Exo 3) : Page d'inscription — création de compte. #}
+{% extends "base.html" %}
+
+{% block title %}Inscription — FeatureHub{% endblock %}
+
+{% block content %}
+
+<div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h1 class="card-title h3 mb-4 text-center">
+                    <i class="bi bi-person-plus"></i> Inscription
+                </h1>
+
+                <form method="POST" action="{{ url_for('auth.register') }}">
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Nom d'utilisateur</label>
+                        <input type="text" class="form-control" id="username" name="username"
+                               required autofocus maxlength="80">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Mot de passe</label>
+                        <input type="password" class="form-control" id="password" name="password"
+                               required minlength="4">
+                        <div class="form-text">4 caractères minimum.</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="confirm" class="form-label">Confirmer le mot de passe</label>
+                        <input type="password" class="form-control" id="confirm" name="confirm"
+                               required minlength="4">
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-check-circle"></i> Créer mon compte
+                    </button>
+                </form>
+
+                <p class="text-center mt-3 mb-0">
+                    Déjà un compte ?
+                    <a href="{{ url_for('auth.login') }}">Se connecter</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

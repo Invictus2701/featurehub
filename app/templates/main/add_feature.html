@@ -1,0 +1,31 @@
+{# Page d'AJOUT d'une demande #}
+{% extends "base.html" %}
+
+{% block title %}Ajouter une demande — FeatureHub{% endblock %}
+
+{% block content %}
+
+<nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{{ url_for('main.index') }}">Accueil</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Nouvelle demande</li>
+    </ol>
+</nav>
+
+<h1 class="mb-4">
+    <i class="bi bi-plus-circle"></i> Ajouter une demande
+</h1>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        {% with feature=None,
+                with_file=True,
+                submit_url=url_for('main.add_feature'),
+                submit_label='Créer la demande',
+                cancel_url=url_for('main.index') %}
+            {% include 'main/_form.html' %}
+        {% endwith %}
+    </div>
+</div>
+
+{% endblock %}

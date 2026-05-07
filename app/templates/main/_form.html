@@ -1,0 +1,68 @@
+{# _form.html - Partial de formulaire reutilisable (add + edit). #}
+
+<form method="POST" action="{{ submit_url }}"
+      {% if with_file %}enctype="multipart/form-data"{% endif %}>
+
+    <div class="mb-3">
+        <label for="title" class="form-label">
+            Titre <span class="text-danger">*</span>
+        </label>
+        <input type="text" class="form-control" id="title" name="title"
+               value="{{ feature.title if feature else '' }}"
+               maxlength="100" required>
+        <div class="form-text">100 caractères maximum.</div>
+    </div>
+
+    <div class="mb-3">
+        <label for="description" class="form-label">Description</label>
+        <textarea class="form-control" id="description" name="description"
+                  rows="5">{{ feature.description if feature else '' }}</textarea>
+    </div>
+
+    <div class="row">
+        <div class="col-md-{% if feature %}4{% else %}6{% endif %} mb-3">
+            <label for="nature" class="form-label">Nature</label>
+            <select class="form-select" id="nature" name="nature">
+                <option value="Feature"      {% if not feature or feature.nature == 'Feature' %}selected{% endif %}>Feature</option>
+                <option value="Bug"          {% if feature and feature.nature == 'Bug' %}selected{% endif %}>Bug</option>
+                <option value="Amélioration" {% if feature and feature.nature == 'Amélioration' %}selected{% endif %}>Amélioration</option>
+            </select>
+        </div>
+
+        <div class="col-md-{% if feature %}4{% else %}6{% endif %} mb-3">
+            <label for="priority" class="form-label">Priorité</label>
+            <select class="form-select" id="priority" name="priority">
+                <option value="Haute"   {% if feature and feature.priority == 'Haute' %}selected{% endif %}>Haute</option>
+                <option value="Moyenne" {% if not feature or feature.priority == 'Moyenne' %}selected{% endif %}>Moyenne</option>
+                <option value="Basse"   {% if feature and feature.priority == 'Basse' %}selected{% endif %}>Basse</option>
+            </select>
+        </div>
+
+        {% if feature %}
+        <div class="col-md-4 mb-3">
+            <label for="status" class="form-label">Statut</label>
+            <select class="form-select" id="status" name="status">
+                <option value="En attente" {% if feature.status == 'En attente' %}selected{% endif %}>En attente</option>
+                <option value="Validé"     {% if feature.status == 'Validé' %}selected{% endif %}>Validé</option>
+                <option value="Rejeté"     {% if feature.status == 'Rejeté' %}selected{% endif %}>Rejeté</option>
+            </select>
+        </div>
+        {% endif %}
+    </div>
+
+    {% if with_file %}
+    <div class="mb-3">
+        <label for="file" class="form-label">Pièce jointe (optionnelle)</label>
+        <input type="file" class="form-control" id="file" name="file"
+               accept=".png,.jpg,.jpeg,.gif,.pdf">
+        <div class="form-text">Formats acceptés : png, jpg, jpeg, gif, pdf — 2 Mo max.</div>
+    </div>
+    {% endif %}
+
+    <div class="d-flex gap-2">
+        <button type="submit" class="btn btn-primary">
+            <i class="bi bi-check-circle"></i> {{ submit_label }}
+        </button>
+        <a href="{{ cancel_url }}" class="btn btn-outline-secondary">Annuler</a>
+    </div>
+</form>

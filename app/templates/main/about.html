@@ -1,0 +1,46 @@
+{# Page "A propos" #}
+{% extends "base.html" %}
+
+{% block title %}À propos — FeatureHub{% endblock %}
+
+{% block content %}
+<h1 class="mb-3">À propos de FeatureHub</h1>
+
+<p>
+    <strong>FeatureHub</strong> est une application web développée dans le cadre du cours
+    d'Architecture Web. Elle permet aux équipes de collecter, gérer et prioriser
+    les demandes de fonctionnalités, les signalements de bugs et les tâches de
+    maintenance au sein d'un projet logiciel.
+</p>
+
+<h2 class="h5 mt-4">Objectif</h2>
+<p>
+    L'objectif principal est de fournir un espace centralisé où chaque membre
+    d'une équipe peut soumettre une idée, signaler un dysfonctionnement ou
+    proposer une amélioration, tout en offrant une vue d'ensemble claire
+    grâce à des filtres, des tris et des indicateurs visuels.
+</p>
+
+<h2 class="h5 mt-4">Technologies utilisées</h2>
+<ul>
+    <li><strong>Python 3</strong> &amp; <strong>Flask</strong> — framework web léger côté serveur.</li>
+    <li><strong>SQLite</strong> via <strong>SQLAlchemy</strong> — base de données relationnelle embarquée et son ORM.</li>
+    <li><strong>Jinja2</strong> — moteur de templates pour le rendu HTML dynamique.</li>
+    <li><strong>Bootstrap 5</strong> &amp; <strong>Bootstrap Icons</strong> — framework CSS pour une interface responsive et moderne.</li>
+    <li><strong>Flask-Login</strong> — gestion de l'authentification et des sessions web (cookies signés).</li>
+    <li><strong>Flask-JWT-Extended</strong> — protection de l'API REST par tokens JWT (Bearer).</li>
+    <li><strong>Werkzeug</strong> — utilitaires de sécurité : hachage des mots de passe et nettoyage des noms de fichiers uploadés.</li>
+</ul>
+
+<h2 class="h5 mt-4">Architecture</h2>
+<p>
+    L'application suit le pattern <strong>MVC</strong> (Model-View-Controller) et est organisée
+    en <em>Application Factory</em> avec trois Blueprints : <code>main</code> (interface web),
+    <code>auth</code> (inscription/connexion) et <code>api</code> (API REST versionnée
+    sous <code>/api/v1/</code>).
+</p>
+
+<a href="{{ url_for('main.index') }}" class="btn btn-primary mt-3">
+    <i class="bi bi-arrow-left"></i> Retour à l'accueil
+</a>
+{% endblock %}

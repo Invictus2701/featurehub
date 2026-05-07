@@ -1,0 +1,140 @@
+{# Page d'accueil — Note TP3 (Exo 1) : ce template est dans templates/main/
+   pour eviter les collisions de noms avec d'autres blueprints. #}
+{% extends "base.html" %}
+
+{% block title %}Accueil — FeatureHub{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="mb-0">Tableau de bord</h1>
+
+    {# Note TP3 (Exo 4) : on n'affiche le bouton "Ajouter" que si l'user est
+       connecté. Si on l'affichait toujours, un visiteur anonyme cliquant
+       dessus serait redirigé vers /login (a cause de @login_required), ce qui
+       ferait une UX un peu moche. #}
+    {% if current_user.is_authenticated %}
+        <a href="{{ url_for('main.add_feature') }}" class="btn btn-success">
+            <i class="bi bi-plus-circle"></i> Ajouter une demande
+        </a>
+    {% else %}
+        <a href="{{ url_for('auth.login') }}" class="btn btn-outline-primary">
+            <i class="bi bi-box-arrow-in-right"></i> Connectez-vous pour ajouter
+        </a>
+    {% endif %}
+</div>
+
+<p class="lead">Bienvenue sur <strong>FeatureHub</strong>, votre plateforme de suivi des demandes de fonctionnalités, bugs et améliorations.</p>
+
+{# Statistiques #}
+<div class="row mb-4">
+    <div class="col-sm-6 col-md-3 mb-2">
+        <div class="card text-center border-primary">
+            <div class="card-body">
+                <h3 class="card-title text-primary">{{ total }}</h3>
+                <p class="card-text">Demandes affichées</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-md-3 mb-2">
+        <div class="card text-center border-info">
+            <div class="card-body">
+                <h3 class="card-title text-info">{{ en_attente }}</h3>
+                <p class="card-text">En attente</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+{# ===== Note TP4 (Exo 1) : FORMULAIRE DE FILTRES ET TRI =====
+   - method="GET" : les valeurs partiront dans l'URL (?nature=Bug&sort=...).
+     Avantage : on peut bookmarker la page filtrée, partager le lien, etc.
+   - L'attribut "selected" sur les options permet de "remember" la sélection
+     apres soumission (les variables f_nature, f_status, etc. viennent de routes.py).
+   - Le bouton "Réinitialiser" pointe vers la page sans aucun paramètre. #}
+<form method="GET" action="{{ url_for('main.index') }}" class="card shadow-sm mb-4">
+    <div class="card-body">
+        <div class="row g-2 align-items-end">
+            <div class="col-md-3">
+                <label for="nature" class="form-label small mb-1">Nature</label>
+                <select id="nature" name="nature" class="form-select form-select-sm">
+                    <option value=""              {% if not f_nature %}selected{% endif %}>Toutes</option>
+                    <option value="Feature"       {% if f_nature == 'Feature' %}selected{% endif %}>Feature</option>
+                    <option value="Bug"           {% if f_nature == 'Bug' %}selected{% endif %}>Bug</option>
+                    <option value="Amélioration"  {% if f_nature == 'Amélioration' %}selected{% endif %}>Amélioration</option>
+                </select>
+            </div>
+
+            <div class="col-md-3">
+                <label for="status" class="form-label small mb-1">Statut</label>
+                <select id="status" name="status" class="form-select form-select-sm">
+                    <option value=""             {% if not f_status %}selected{% endif %}>Tous</option>
+                    <option value="En attente"   {% if f_status == 'En attente' %}selected{% endif %}>En attente</option>
+                    <option value="Validé"       {% if f_status == 'Validé' %}selected{% endif %}>Validé</option>
+                    <option value="Rejeté"       {% if f_status == 'Rejeté' %}selected{% endif %}>Rejeté</option>
+                </select>
+            </div>
+
+            <div class="col-md-2">
+                <label for="priority" class="form-label small mb-1">Priorité</label>
+                <select id="priority" name="priority" class="form-select form-select-sm">
+                    <option value=""         {% if not f_priority %}selected{% endif %}>Toutes</option>
+                    <option value="Haute"    {% if f_priority == 'Haute' %}selected{% endif %}>Haute</option>
+                    <option value="Moyenne"  {% if f_priority == 'Moyenne' %}selected{% endif %}>Moyenne</option>
+                    <option value="Basse"    {% if f_priority == 'Basse' %}selected{% endif %}>Basse</option>
+                </select>
+            </div>
+
+            <div class="col-md-2">
+                <label for="sort" class="form-label small mb-1">Tri</label>
+                <select id="sort" name="sort" class="form-select form-select-sm">
+                    <option value="date_desc"  {% if f_sort == 'date_desc' %}selected{% endif %}>Date ↓ (récent)</option>
+                    <option value="date_asc"   {% if f_sort == 'date_asc' %}selected{% endif %}>Date ↑ (ancien)</option>
+                    <option value="title_asc"  {% if f_sort == 'title_asc' %}selected{% endif %}>Titre A→Z</option>
+                    <option value="priority"   {% if f_sort == 'priority' %}selected{% endif %}>Priorité (↓)</option>
+                </select>
+            </div>
+
+            <div class="col-md-2 d-flex gap-1">
+                <button type="submit" class="btn btn-primary btn-sm flex-grow-1">
+                    <i class="bi bi-funnel"></i> Filtrer
+                </button>
+                {# Note TP4 (Exo 1) : "Réinitialiser" = lien vers la page sans aucun paramètre #}
+                <a href="{{ url_for('main.index') }}" class="btn btn-outline-secondary btn-sm" title="Réinitialiser">
+                    <i class="bi bi-x-circle"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</form>
+
+{% if features %}
+    <div class="row">
+        {% for feature in features %}
+            {% include 'main/_card.html' %}
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="text-center py-5 bg-white rounded shadow-sm">
+        <i class="bi bi-inbox display-1 text-muted"></i>
+        {# Note TP4 (Exo 1) : on differencie "base vide" et "filtres trop stricts" #}
+        {% if f_nature or f_status or f_priority %}
+            <p class="lead mt-3">Aucune demande ne correspond aux filtres.</p>
+            <a href="{{ url_for('main.index') }}" class="btn btn-outline-secondary mt-2">
+                <i class="bi bi-x-circle"></i> Réinitialiser les filtres
+            </a>
+        {% else %}
+            <p class="lead mt-3">Aucune demande pour le moment.</p>
+            <p class="text-muted">Soyez le premier à proposer une amélioration ou à signaler un bug.</p>
+            {% if current_user.is_authenticated %}
+                <a href="{{ url_for('main.add_feature') }}" class="btn btn-primary mt-2">
+                    <i class="bi bi-plus-circle"></i> Créer la première demande
+                </a>
+            {% else %}
+                <a href="{{ url_for('auth.register') }}" class="btn btn-primary mt-2">
+                    <i class="bi bi-person-plus"></i> Créer un compte
+                </a>
+            {% endif %}
+        {% endif %}
+    </div>
+{% endif %}
+{% endblock %}
