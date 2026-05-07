@@ -1,0 +1,64 @@
+{# Page d'accueil - herite du layout base.html #}
+{% extends "base.html" %}
+
+{% block title %}Accueil — FeatureHub{% endblock %}
+
+{% block content %}
+{# Note TP2 (Exo 1) : on met le titre et le bouton "Ajouter" cote a cote
+   grace a justify-content-between (flexbox de Bootstrap). #}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="mb-0">Tableau de bord</h1>
+    <a href="{{ url_for('add_feature') }}" class="btn btn-success">
+        <i class="bi bi-plus-circle"></i> Ajouter une demande
+    </a>
+</div>
+
+<p class="lead">Bienvenue sur <strong>FeatureHub</strong>, votre plateforme de suivi des demandes de fonctionnalités, bugs et améliorations.</p>
+
+{# ===== SECTION STATISTIQUES ===== #}
+{# On affiche le nombre total de demandes et celles en attente #}
+{# Les valeurs "total" et "en_attente" sont calculées dans app.py et passées au template #}
+<div class="row mb-4">
+    <div class="col-sm-6 col-md-3 mb-2">
+        <div class="card text-center border-primary">
+            <div class="card-body">
+                <h3 class="card-title text-primary">{{ total }}</h3>
+                <p class="card-text">Demandes au total</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-md-3 mb-2">
+        <div class="card text-center border-info">
+            <div class="card-body">
+                <h3 class="card-title text-info">{{ en_attente }}</h3>
+                <p class="card-text">En attente</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+{# Note TP2 (Exo 3) : gestion de la liste vide.
+   Si la base ne contient AUCUNE demande, on affiche un message d'invitation
+   au lieu d'une page vide deroutante. C'est ce qu'on appelle un "empty state". #}
+{% if features %}
+    {# ===== GRILLE DE CARTES ===== #}
+    {# On boucle sur la liste "features" passée depuis app.py #}
+    {# Chaque carte est dans un col-md-4 donc on a 3 cartes par ligne sur grand ecran #}
+    {# Le include charge le fichier _card.html qui contient le HTML d'une seule carte #}
+    {# La variable "feature" de la boucle est automatiquement accesible dans le fichier inclus #}
+    <div class="row">
+        {% for feature in features %}
+            {% include '_card.html' %}
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="text-center py-5 bg-white rounded shadow-sm">
+        <i class="bi bi-inbox display-1 text-muted"></i>
+        <p class="lead mt-3">Aucune demande pour le moment.</p>
+        <p class="text-muted">Soyez le premier à proposer une amélioration ou à signaler un bug.</p>
+        <a href="{{ url_for('add_feature') }}" class="btn btn-primary mt-2">
+            <i class="bi bi-plus-circle"></i> Créer la première demande
+        </a>
+    </div>
+{% endif %}
+{% endblock %}

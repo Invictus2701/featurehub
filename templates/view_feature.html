@@ -1,0 +1,158 @@
+{# Page de detail d'une demande specifique #}
+{# La variable "feature" est passé depuis la route /feature/<id> dans app.py #}
+{% extends "base.html" %}
+
+{% block title %}{{ feature.title }} — FeatureHub{% endblock %}
+
+{% block content %}
+
+{# Breadcrumb : fil d'arianne pour que l'utilisateur sache ou il se trouve #}
+<nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{{ url_for('index') }}">Accueil</a></li>
+        <li class="breadcrumb-item active" aria-current="page">{{ feature.title }}</li>
+    </ol>
+</nav>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        {# Note TP2 (Exo 5 + 6) : barre d'actions Modifier / Supprimer en haut a droite. #}
+        <div class="d-flex justify-content-between align-items-start mb-3">
+            <h1 class="card-title h3 mb-0">{{ feature.title }}</h1>
+
+            <div class="d-flex gap-2">
+                {# Bouton Modifier : simple lien vers la route d'edition #}
+                <a href="{{ url_for('edit_feature', feature_id=feature.id) }}"
+                   class="btn btn-sm btn-outline-primary">
+                    <i class="bi bi-pencil"></i> Modifier
+                </a>
+
+                {# Note TP2 (Exo 6) : bouton Supprimer.
+                   data-bs-toggle="modal" + data-bs-target ouvrent la modale Bootstrap
+                   définie plus bas, AVANT d'envoyer le POST de suppression.
+                   On évite ainsi les suppressions accidentelles. #}
+                <button type="button" class="btn btn-sm btn-outline-danger"
+                        data-bs-toggle="modal" data-bs-target="#confirmDeleteModal">
+                    <i class="bi bi-trash"></i> Supprimer
+                </button>
+            </div>
+        </div>
+
+        {# Badges : meme logique que dans _card.html pour la coherence visuelle #}
+        <div class="mb-3">
+            {# Badge Nature #}
+            {% if feature.nature == "Bug" %}
+                <span class="badge bg-danger me-1">Bug</span>
+            {% elif feature.nature == "Feature" %}
+                <span class="badge bg-primary me-1">Feature</span>
+            {% else %}
+                <span class="badge bg-info text-dark me-1">{{ feature.nature }}</span>
+            {% endif %}
+
+            {# Badge Priorité #}
+            {% if feature.priority == "Haute" %}
+                <span class="badge bg-danger me-1">Haute</span>
+            {% elif feature.priority == "Moyenne" %}
+                <span class="badge bg-warning text-dark me-1">Moyenne</span>
+            {% else %}
+                <span class="badge bg-secondary me-1">Basse</span>
+            {% endif %}
+
+            {# Badge Statut #}
+            {% if feature.status == "En attente" %}
+                <span class="badge bg-info text-dark">En attente</span>
+            {% elif feature.status == "Validé" %}
+                <span class="badge bg-success">Validé</span>
+            {% else %}
+                <span class="badge bg-danger">Rejeté</span>
+            {% endif %}
+        </div>
+
+        {# Note TP2 (Exo 3) : date de création formatée #}
+        <p class="text-muted small">
+            <i class="bi bi-clock"></i>
+            Créée le {{ feature.created_at.strftime('%d/%m/%Y à %H:%M') }}
+        </p>
+
+        <h2 class="h5 mt-4">Description</h2>
+        {% if feature.description %}
+            <p>{{ feature.description }}</p>
+        {% else %}
+            <p class="fst-italic text-muted">Pas de description fournie.</p>
+        {% endif %}
+
+        {# Note TP2 (Exo 7) : affichage de la pièce jointe.
+           Si c'est une image, on l'affiche directement avec <img>.
+           Sinon (pdf, etc.), on propose un lien de téléchargement. #}
+        {% if feature.filename %}
+            <h2 class="h5 mt-4">Pièce jointe</h2>
+            {# On déduit l'extension a partir du nom du fichier (apres le dernier ".") #}
+            {% set ext = feature.filename.rsplit('.', 1)[1].lower() %}
+            {% if ext in ['png', 'jpg', 'jpeg', 'gif'] %}
+                <a href="{{ url_for('static', filename='uploads/' + feature.filename) }}" target="_blank">
+                    <img src="{{ url_for('static', filename='uploads/' + feature.filename) }}"
+                         alt="Pièce jointe"
+                         class="img-fluid rounded border" style="max-height: 400px;">
+                </a>
+            {% else %}
+                <a href="{{ url_for('static', filename='uploads/' + feature.filename) }}"
+                   class="btn btn-outline-primary" target="_blank" download>
+                    <i class="bi bi-download"></i> Télécharger {{ feature.filename }}
+                </a>
+            {% endif %}
+        {% endif %}
+
+        {# Petit tableau recapitulatif avec les infos de la demande #}
+        <table class="table table-borderless mt-4" style="max-width: 400px;">
+            <tr>
+                <th scope="row">Nature</th>
+                <td>{{ feature.nature }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Priorité</th>
+                <td>{{ feature.priority }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Statut</th>
+                <td>{{ feature.status }}</td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+<a href="{{ url_for('index') }}" class="btn btn-outline-primary mt-3">
+    <i class="bi bi-arrow-left"></i> Retour à la liste
+</a>
+
+{# ===== MODALE DE CONFIRMATION DE SUPPRESSION =====
+   Note TP2 (Exo 6) : la modale Bootstrap qui demande "Êtes-vous sûr ?".
+   Elle reste cachée par défaut et ne s'affiche que quand on clique sur le
+   bouton "Supprimer" plus haut (grace a data-bs-toggle="modal").
+   Le formulaire interieur poste sur /feature/<id>/delete UNIQUEMENT en POST. #}
+<div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmDeleteLabel">Confirmer la suppression</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+            </div>
+            <div class="modal-body">
+                <p>Voulez-vous vraiment supprimer la demande <strong>« {{ feature.title }} »</strong> ?</p>
+                <p class="text-muted small">Cette action est irréversible.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                {# Note TP2 (Exo 6) : un mini-formulaire avec method=POST.
+                   Pas de champ visible : on a juste besoin d'envoyer une requete POST
+                   vers la route de suppression. #}
+                <form method="POST" action="{{ url_for('delete_feature', feature_id=feature.id) }}" class="d-inline">
+                    <button type="submit" class="btn btn-danger">
+                        <i class="bi bi-trash"></i> Oui, supprimer
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

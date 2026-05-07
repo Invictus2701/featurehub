@@ -1,0 +1,76 @@
+{# _card.html - Fichier "partial" pour une carte de demande #}
+{# Le underscore au debut du nom c'est une convention pour dire que c'est un bout #}
+{# de template reutilisable, pas une page complette #}
+{# Ce fichier est inclus depuis index.html avec {% include '_card.html' %} #}
+
+<div class="col-md-4 mb-4">
+    <div class="card h-100 shadow-sm">
+        {# d-flex flex-column permet de pousser les badges en bas de la carte #}
+        <div class="card-body d-flex flex-column">
+            {# Note TP2 (Exo 4) : le titre est maintenant un LIEN cliquable qui amene
+               vers la page de detail. text-decoration-none enleve le souligné par defaut. #}
+            <h5 class="card-title">
+                <a href="{{ url_for('view_feature', feature_id=feature.id) }}"
+                   class="text-decoration-none text-dark stretched-link">
+                    {{ feature.title }}
+                </a>
+            </h5>
+
+            {# Si la description est vide on affiche un texte par defaut en italique #}
+            {% if feature.description %}
+                <p class="card-text">{{ feature.description }}</p>
+            {% else %}
+                <p class="card-text fst-italic text-muted">Pas de description fournie.</p>
+            {% endif %}
+
+            {# Note TP2 (Exo 3) : date de création formatée.
+               feature.created_at est un objet datetime Python, on utilise sa methode
+               strftime pour formater l'affichage : %d=jour, %m=mois, %Y=année 4 chiffres,
+               %H=heure (24h), %M=minutes. #}
+            <p class="text-muted small mb-2">
+                <i class="bi bi-clock"></i>
+                Créée le {{ feature.created_at.strftime('%d/%m/%Y à %H:%M') }}
+            </p>
+
+            {# mt-auto pousse cette div vers le bas grace a flexbox #}
+            <div class="mt-auto">
+                {# Badge pour la Nature de la demande #}
+                {# Rouge pour les bugs, bleu pour les features, cyan pour le reste #}
+                {% if feature.nature == "Bug" %}
+                    <span class="badge bg-danger me-1">Bug</span>
+                {% elif feature.nature == "Feature" %}
+                    <span class="badge bg-primary me-1">Feature</span>
+                {% else %}
+                    <span class="badge bg-info text-dark me-1">{{ feature.nature }}</span>
+                {% endif %}
+
+                {# Badge pour la Priorité #}
+                {# bg-danger = rouge (haute), bg-warning = jaune (moyenne), bg-secondary = gris (basse) #}
+                {% if feature.priority == "Haute" %}
+                    <span class="badge bg-danger me-1">Haute</span>
+                {% elif feature.priority == "Moyenne" %}
+                    <span class="badge bg-warning text-dark me-1">Moyenne</span>
+                {% else %}
+                    <span class="badge bg-secondary me-1">Basse</span>
+                {% endif %}
+
+                {# Badge pour le Statut #}
+                {% if feature.status == "En attente" %}
+                    <span class="badge bg-info text-dark">En attente</span>
+                {% elif feature.status == "Validé" %}
+                    <span class="badge bg-success">Validé</span>
+                {% else %}
+                    <span class="badge bg-danger">Rejeté</span>
+                {% endif %}
+
+                {# Note TP2 (Exo 7) : petit indicateur visuel s'il y a une piece jointe.
+                   Pas le fichier lui-meme (on l'affiche sur la page de detail), juste un picto. #}
+                {% if feature.filename %}
+                    <span class="badge bg-light text-dark border" title="Avec pièce jointe">
+                        <i class="bi bi-paperclip"></i>
+                    </span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>

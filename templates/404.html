@@ -1,0 +1,15 @@
+{# Page d'erreur 404 - affichée quand l'utilisateur essaye d'acceder a une page qui n'existe pas #}
+{# Par exemple /feature/999 si il n'y a pas de feature avec l'id 999 #}
+{% extends "base.html" %}
+
+{% block title %}Page introuvable — FeatureHub{% endblock %}
+
+{% block content %}
+<div class="text-center py-5">
+    <h1 class="display-1 text-muted">404</h1>
+    <p class="lead">La page que vous recherchez n'existe pas ou a été déplacée.</p>
+    <a href="{{ url_for('index') }}" class="btn btn-primary mt-2">
+        <i class="bi bi-house"></i> Retour à l'accueil
+    </a>
+</div>
+{% endblock %}
