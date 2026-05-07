@@ -1,0 +1,25 @@
+/* FeatureHub — Feuille de styles personnalisée */
+/* Ce fichier vient en complement de Bootstrap pour ajouter nos propres regles */
+
+/* Couleur de fond de la page et police par defaut */
+body {
+    background-color: #f5f7fa;
+    font-family: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+/* Animation sur les cartes : quand on survole une carte elle monte legerement */
+/* et on ajoute une ombre plus prononcée (ca donne un effet de "surelevation") */
+.card {
+    transition: transform 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 .5rem 1rem rgba(0, 0, 0, .12);
+}
+
+/* Style du footer : texte plus petit et grisé */
+footer {
+    font-size: 0.9rem;
+    color: #6c757d;
+}

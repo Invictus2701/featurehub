@@ -1,0 +1,142 @@
+{# Page de detail d'une demande #}
+{% extends "base.html" %}
+
+{% block title %}{{ feature.title }} — FeatureHub{% endblock %}
+
+{% block content %}
+
+<nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{{ url_for('main.index') }}">Accueil</a></li>
+        <li class="breadcrumb-item active" aria-current="page">{{ feature.title }}</li>
+    </ol>
+</nav>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <div class="d-flex justify-content-between align-items-start mb-3">
+            <h1 class="card-title h3 mb-0">{{ feature.title }}</h1>
+
+            {# Note TP3 (Exo 6) : on n'affiche les boutons Modifier/Supprimer
+               QUE si l'user connecté est l'auteur de la demande.
+               Double sécurité : meme si quelqu'un trafiquait son HTML pour
+               afficher ces boutons, le serveur refuserait l'action grace a
+               la verification author_id == current_user.id dans les routes. #}
+            {% if current_user.is_authenticated and current_user.id == feature.author_id %}
+                <div class="d-flex gap-2">
+                    <a href="{{ url_for('main.edit_feature', feature_id=feature.id) }}"
+                       class="btn btn-sm btn-outline-primary">
+                        <i class="bi bi-pencil"></i> Modifier
+                    </a>
+                    <button type="button" class="btn btn-sm btn-outline-danger"
+                            data-bs-toggle="modal" data-bs-target="#confirmDeleteModal">
+                        <i class="bi bi-trash"></i> Supprimer
+                    </button>
+                </div>
+            {% endif %}
+        </div>
+
+        {# Badges (Nature, Priorité, Statut) #}
+        <div class="mb-3">
+            {% if feature.nature == "Bug" %}
+                <span class="badge bg-danger me-1">Bug</span>
+            {% elif feature.nature == "Feature" %}
+                <span class="badge bg-primary me-1">Feature</span>
+            {% else %}
+                <span class="badge bg-info text-dark me-1">{{ feature.nature }}</span>
+            {% endif %}
+
+            {% if feature.priority == "Haute" %}
+                <span class="badge bg-danger me-1">Haute</span>
+            {% elif feature.priority == "Moyenne" %}
+                <span class="badge bg-warning text-dark me-1">Moyenne</span>
+            {% else %}
+                <span class="badge bg-secondary me-1">Basse</span>
+            {% endif %}
+
+            {% if feature.status == "En attente" %}
+                <span class="badge bg-info text-dark">En attente</span>
+            {% elif feature.status == "Validé" %}
+                <span class="badge bg-success">Validé</span>
+            {% else %}
+                <span class="badge bg-danger">Rejeté</span>
+            {% endif %}
+        </div>
+
+        {# Note TP3 (Exo 5) : auteur + date de création #}
+        <p class="text-muted small">
+            <i class="bi bi-person"></i>
+            Par
+            {% if feature.author %}
+                <strong>{{ feature.author.username }}</strong>
+            {% else %}
+                <em>auteur inconnu</em>
+            {% endif %}
+            &middot; <i class="bi bi-clock"></i>
+            {{ feature.created_at.strftime('%d/%m/%Y à %H:%M') }}
+        </p>
+
+        <h2 class="h5 mt-4">Description</h2>
+        {% if feature.description %}
+            <p>{{ feature.description }}</p>
+        {% else %}
+            <p class="fst-italic text-muted">Pas de description fournie.</p>
+        {% endif %}
+
+        {# Pièce jointe (si presente) #}
+        {% if feature.filename %}
+            <h2 class="h5 mt-4">Pièce jointe</h2>
+            {% set ext = feature.filename.rsplit('.', 1)[1].lower() %}
+            {% if ext in ['png', 'jpg', 'jpeg', 'gif'] %}
+                <a href="{{ url_for('static', filename='uploads/' + feature.filename) }}" target="_blank">
+                    <img src="{{ url_for('static', filename='uploads/' + feature.filename) }}"
+                         alt="Pièce jointe"
+                         class="img-fluid rounded border" style="max-height: 400px;">
+                </a>
+            {% else %}
+                <a href="{{ url_for('static', filename='uploads/' + feature.filename) }}"
+                   class="btn btn-outline-primary" target="_blank" download>
+                    <i class="bi bi-download"></i> Télécharger {{ feature.filename }}
+                </a>
+            {% endif %}
+        {% endif %}
+
+        <table class="table table-borderless mt-4" style="max-width: 400px;">
+            <tr><th scope="row">Nature</th><td>{{ feature.nature }}</td></tr>
+            <tr><th scope="row">Priorité</th><td>{{ feature.priority }}</td></tr>
+            <tr><th scope="row">Statut</th><td>{{ feature.status }}</td></tr>
+        </table>
+    </div>
+</div>
+
+<a href="{{ url_for('main.index') }}" class="btn btn-outline-primary mt-3">
+    <i class="bi bi-arrow-left"></i> Retour à la liste
+</a>
+
+{# Modale de confirmation de suppression — uniquement si l'user est l'auteur #}
+{% if current_user.is_authenticated and current_user.id == feature.author_id %}
+<div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmDeleteLabel">Confirmer la suppression</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+            </div>
+            <div class="modal-body">
+                <p>Voulez-vous vraiment supprimer la demande <strong>« {{ feature.title }} »</strong> ?</p>
+                <p class="text-muted small">Cette action est irréversible.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                <form method="POST" action="{{ url_for('main.delete_feature', feature_id=feature.id) }}" class="d-inline">
+                    <button type="submit" class="btn btn-danger">
+                        <i class="bi bi-trash"></i> Oui, supprimer
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% endblock %}

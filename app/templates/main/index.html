@@ -1,0 +1,70 @@
+{# Page d'accueil — Note TP3 (Exo 1) : ce template est dans templates/main/
+   pour eviter les collisions de noms avec d'autres blueprints. #}
+{% extends "base.html" %}
+
+{% block title %}Accueil — FeatureHub{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="mb-0">Tableau de bord</h1>
+
+    {# Note TP3 (Exo 4) : on n'affiche le bouton "Ajouter" que si l'user est
+       connecté. Si on l'affichait toujours, un visiteur anonyme cliquant
+       dessus serait redirigé vers /login (a cause de @login_required), ce qui
+       ferait une UX un peu moche. #}
+    {% if current_user.is_authenticated %}
+        <a href="{{ url_for('main.add_feature') }}" class="btn btn-success">
+            <i class="bi bi-plus-circle"></i> Ajouter une demande
+        </a>
+    {% else %}
+        <a href="{{ url_for('auth.login') }}" class="btn btn-outline-primary">
+            <i class="bi bi-box-arrow-in-right"></i> Connectez-vous pour ajouter
+        </a>
+    {% endif %}
+</div>
+
+<p class="lead">Bienvenue sur <strong>FeatureHub</strong>, votre plateforme de suivi des demandes de fonctionnalités, bugs et améliorations.</p>
+
+{# Statistiques #}
+<div class="row mb-4">
+    <div class="col-sm-6 col-md-3 mb-2">
+        <div class="card text-center border-primary">
+            <div class="card-body">
+                <h3 class="card-title text-primary">{{ total }}</h3>
+                <p class="card-text">Demandes au total</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-md-3 mb-2">
+        <div class="card text-center border-info">
+            <div class="card-body">
+                <h3 class="card-title text-info">{{ en_attente }}</h3>
+                <p class="card-text">En attente</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if features %}
+    <div class="row">
+        {% for feature in features %}
+            {% include 'main/_card.html' %}
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="text-center py-5 bg-white rounded shadow-sm">
+        <i class="bi bi-inbox display-1 text-muted"></i>
+        <p class="lead mt-3">Aucune demande pour le moment.</p>
+        <p class="text-muted">Soyez le premier à proposer une amélioration ou à signaler un bug.</p>
+        {% if current_user.is_authenticated %}
+            <a href="{{ url_for('main.add_feature') }}" class="btn btn-primary mt-2">
+                <i class="bi bi-plus-circle"></i> Créer la première demande
+            </a>
+        {% else %}
+            <a href="{{ url_for('auth.register') }}" class="btn btn-primary mt-2">
+                <i class="bi bi-person-plus"></i> Créer un compte
+            </a>
+        {% endif %}
+    </div>
+{% endif %}
+{% endblock %}
